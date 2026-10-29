@@ -1,0 +1,48 @@
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">🌊</div>
+      <div>
+        <h2>Nuatilus</h2>
+        <span>Gestión de buceo</span>
+      </div>
+    </div>
+
+    <div class="sidebar-label">ADMINISTRACIÓN</div>
+
+    <nav class="navigation">
+      <a
+        class="nav-item"
+        routerLink="/escuelas"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <span class="nav-icon">🏫</span>
+        Escuelas
+      </a>
+
+      <a
+        class="nav-item"
+        routerLink="/instructores"
+        routerLinkActive="active"
+      >
+        <span class="nav-icon">🤿</span>
+        Instructores
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span class="status-dot"></span>
+      Sistema en desarrollo
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+
+    <footer class="page-footer">
+      <span>Nuatilus · Plataforma de gestión de buceo</span>
+      <span>Entorno de desarrollo</span>
+    </footer>
+  </main>
+</div>

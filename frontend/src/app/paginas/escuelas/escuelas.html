@@ -1,0 +1,270 @@
+<header class="topbar">
+  <div>
+    <span class="breadcrumb">Administración / Escuelas</span>
+    <h1>Escuelas de buceo</h1>
+  </div>
+
+  <div class="topbar-badge">
+    <span class="status-dot"></span>
+    Panel administrativo
+  </div>
+</header>
+
+@if (mensaje) {
+  <div
+    class="alert"
+    [class.alert-success]="tipoMensaje === 'exito'"
+    [class.alert-error]="tipoMensaje === 'error'"
+    role="status"
+  >
+    <span>{{ mensaje }}</span>
+    <button
+      type="button"
+      class="alert-close"
+      aria-label="Cerrar mensaje"
+      (click)="cerrarMensaje()"
+    >
+      ×
+    </button>
+  </div>
+}
+
+<section class="welcome-card">
+  <div>
+    <span class="eyebrow">PANEL DE CONTROL</span>
+    <h2>Administrá tus escuelas</h2>
+    <p>
+      Registrá escuelas de buceo y mantené su información actualizada
+      desde un solo lugar.
+    </p>
+  </div>
+
+  <div class="welcome-icon" aria-hidden="true">🌊</div>
+</section>
+
+<section class="stats-grid">
+  <article class="stat-card">
+    <div class="stat-icon">🏫</div>
+    <div>
+      <span class="stat-label">Total de escuelas</span>
+      <strong>{{ escuelas.length }}</strong>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-icon active-icon">✓</div>
+    <div>
+      <span class="stat-label">Escuelas activas</span>
+      <strong>{{ escuelas.filter(escuela => escuela.activa).length }}</strong>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-icon inactive-icon">○</div>
+    <div>
+      <span class="stat-label">Escuelas inactivas</span>
+      <strong>{{ escuelas.filter(escuela => !escuela.activa).length }}</strong>
+    </div>
+  </article>
+</section>
+
+<section class="content-grid">
+  <article class="panel form-panel">
+    <div class="panel-heading">
+      <div>
+        <span class="section-kicker">
+          {{ escuelaEditandoId !== null ? 'EDICIÓN' : 'NUEVO REGISTRO' }}
+        </span>
+        <h2>
+          {{ escuelaEditandoId !== null ? 'Editar escuela' : 'Registrar escuela' }}
+        </h2>
+      </div>
+      <span class="heading-icon">＋</span>
+    </div>
+
+    <form (ngSubmit)="guardarEscuela()" #escuelaForm="ngForm">
+      <div class="form-group">
+        <label for="nombre">Nombre de la escuela *</label>
+        <input
+          id="nombre"
+          name="nombre"
+          type="text"
+          [(ngModel)]="formulario.nombre"
+          placeholder="Ej. Escuela de Buceo Atlantis"
+          minlength="2"
+          maxlength="150"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          [(ngModel)]="formulario.email"
+          placeholder="contacto@escuela.com"
+          maxlength="150"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="telefono">Teléfono</label>
+        <input
+          id="telefono"
+          name="telefono"
+          type="tel"
+          [(ngModel)]="formulario.telefono"
+          placeholder="Ej. 1123456789"
+          maxlength="30"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="direccion">Dirección</label>
+        <input
+          id="direccion"
+          name="direccion"
+          type="text"
+          [(ngModel)]="formulario.direccion"
+          placeholder="Ciudad y dirección"
+          maxlength="255"
+        />
+      </div>
+
+      <label class="checkbox-row">
+        <input
+          type="checkbox"
+          name="activa"
+          [(ngModel)]="formulario.activa"
+        />
+        <span class="checkbox-text">
+          <strong>Escuela activa</strong>
+          <small>La escuela se encuentra operativa.</small>
+        </span>
+      </label>
+
+      <div class="form-actions">
+        @if (escuelaEditandoId !== null) {
+          <button
+            type="button"
+            class="button button-secondary"
+            (click)="cancelarEdicion()"
+          >
+            Cancelar
+          </button>
+        }
+
+        <button
+          type="submit"
+          class="button button-primary"
+          [disabled]="!escuelaForm.valid || guardando"
+        >
+          {{
+            guardando
+              ? 'Guardando...'
+              : escuelaEditandoId !== null
+                ? 'Guardar cambios'
+                : 'Registrar escuela'
+          }}
+        </button>
+      </div>
+    </form>
+  </article>
+
+  <article class="panel list-panel" id="escuelas">
+    <div class="panel-heading list-heading">
+      <div>
+        <span class="section-kicker">DIRECTORIO</span>
+        <h2>Escuelas registradas</h2>
+      </div>
+      <span class="count-badge">{{ escuelas.length }}</span>
+    </div>
+
+    @if (cargando) {
+      <div class="empty-state">
+        <div class="loading-spinner"></div>
+        <p>Cargando escuelas...</p>
+      </div>
+    } @else if (escuelas.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">🏫</div>
+        <h3>Todavía no hay escuelas</h3>
+        <p>Registrá la primera escuela utilizando el formulario.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ESCUELA</th>
+              <th>CONTACTO</th>
+              <th>ESTADO</th>
+              <th>ACCIONES</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (escuela of escuelas; track escuela.id) {
+              <tr>
+                <td>
+                  <div class="school-cell">
+                    <div class="school-avatar">
+                      {{ escuela.nombre.charAt(0).toUpperCase() }}
+                    </div>
+                    <div>
+                      <strong>{{ escuela.nombre }}</strong>
+                      <small>{{ escuela.direccion || 'Sin dirección' }}</small>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <div class="contact-cell">
+                    <span>{{ escuela.email || 'Sin correo' }}</span>
+                    <small>{{ escuela.telefono || 'Sin teléfono' }}</small>
+                  </div>
+                </td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.status-active]="escuela.activa"
+                    [class.status-inactive]="!escuela.activa"
+                  >
+                    {{ escuela.activa ? 'Activa' : 'Inactiva' }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="action-buttons">
+                    <button
+                      type="button"
+                      class="icon-button edit-button"
+                      title="Editar escuela"
+                      aria-label="Editar escuela"
+                      (click)="editarEscuela(escuela)"
+                    >
+                      ✎
+                    </button>
+
+                    <button
+                      type="button"
+                      class="icon-button delete-button"
+                      title="Eliminar escuela"
+                      aria-label="Eliminar escuela"
+                      (click)="eliminarEscuela(escuela)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </article>
+</section>

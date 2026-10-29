@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Escuela {
+  id           Int          @id @default(autoincrement())
+  nombre       String       @db.VarChar(150)
+  email        String?      @unique @db.VarChar(150)
+  telefono     String?      @db.VarChar(30)
+  direccion    String?      @db.VarChar(255)
+  activa       Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  instructores Instructor[]
+}
+
+model Instructor {
+  id           Int      @id @default(autoincrement())
+  nombre       String   @db.VarChar(100)
+  apellido     String   @db.VarChar(100)
+  dni          String   @unique @db.VarChar(20)
+  email        String?  @db.VarChar(150)
+  telefono     String?  @db.VarChar(30)
+  especialidad String?  @db.VarChar(100)
+  activo       Boolean  @default(true)
+  escuelaId    Int
+  escuela      Escuela  @relation(fields: [escuelaId], references: [id], onDelete: Restrict)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([escuelaId])
+}

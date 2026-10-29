@@ -1,0 +1,292 @@
+<div class="instructores-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">ADMINISTRACIÓN</span>
+      <h1>Instructores</h1>
+      <p>Gestioná los instructores y sus escuelas de buceo.</p>
+    </div>
+
+    <div class="header-badge">
+      <span class="status-dot"></span>
+      Sistema operativo
+    </div>
+  </header>
+
+  @if (mensaje) {
+    <div
+      class="alerta"
+      [class.alerta-error]="tipoMensaje === 'error'"
+      [class.alerta-exito]="tipoMensaje === 'exito'"
+      role="status"
+    >
+      <span>{{ mensaje }}</span>
+      <button type="button" (click)="cerrarMensaje()" aria-label="Cerrar mensaje">
+        ×
+      </button>
+    </div>
+  }
+
+  <section class="estadisticas">
+    <article class="stat-card">
+      <span class="stat-label">Total de instructores</span>
+      <strong>{{ instructores.length }}</strong>
+      <span class="stat-detail">Registrados en el sistema</span>
+    </article>
+
+    <article class="stat-card">
+      <span class="stat-label">Instructores activos</span>
+      <strong>{{ contarActivos() }}</strong>
+      <span class="stat-detail">Disponibles actualmente</span>
+    </article>
+
+    <article class="stat-card">
+      <span class="stat-label">Escuelas registradas</span>
+      <strong>{{ escuelas.length }}</strong>
+      <span class="stat-detail">Escuelas disponibles</span>
+    </article>
+  </section>
+
+  <section class="panel formulario-panel">
+    <div class="panel-header">
+      <div>
+        <span class="eyebrow">GESTIÓN DE PERSONAL</span>
+        <h2>{{ instructorEditandoId === null ? 'Registrar instructor' : 'Editar instructor' }}</h2>
+        <p>Completá los datos y seleccioná la escuela correspondiente.</p>
+      </div>
+    </div>
+
+    @if (escuelas.length === 0) {
+      <div class="aviso">
+        No hay escuelas disponibles. Registrá una escuela antes de agregar instructores.
+      </div>
+    }
+
+    <form #instructorForm="ngForm" (ngSubmit)="guardarInstructor()">
+      <div class="form-grid">
+        <div class="campo">
+          <label for="nombre">Nombre *</label>
+          <input
+            id="nombre"
+            name="nombre"
+            type="text"
+            [(ngModel)]="formulario.nombre"
+            required
+            minlength="2"
+            maxlength="100"
+            placeholder="Ej. Carlos"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="apellido">Apellido *</label>
+          <input
+            id="apellido"
+            name="apellido"
+            type="text"
+            [(ngModel)]="formulario.apellido"
+            required
+            minlength="2"
+            maxlength="100"
+            placeholder="Ej. Gómez"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="dni">DNI *</label>
+          <input
+            id="dni"
+            name="dni"
+            type="text"
+            [(ngModel)]="formulario.dni"
+            required
+            minlength="7"
+            maxlength="20"
+            placeholder="Ej. 30123456"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="email">Correo electrónico</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            [(ngModel)]="formulario.email"
+            maxlength="150"
+            placeholder="instructor@ejemplo.com"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="telefono">Teléfono</label>
+          <input
+            id="telefono"
+            name="telefono"
+            type="tel"
+            [(ngModel)]="formulario.telefono"
+            maxlength="30"
+            placeholder="11 4567-8901"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="especialidad">Especialidad</label>
+          <input
+            id="especialidad"
+            name="especialidad"
+            type="text"
+            [(ngModel)]="formulario.especialidad"
+            maxlength="100"
+            placeholder="Ej. Buceo recreativo"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="escuelaId">Escuela *</label>
+          <select
+            id="escuelaId"
+            name="escuelaId"
+            [(ngModel)]="formulario.escuelaId"
+            required
+          >
+            <option [ngValue]="0" disabled>Seleccioná una escuela</option>
+            @for (escuela of escuelas; track escuela.id) {
+              <option [ngValue]="escuela.id">{{ escuela.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="campo campo-estado">
+          <label for="activo">Estado</label>
+          <label class="switch-label">
+            <input
+              id="activo"
+              name="activo"
+              type="checkbox"
+              [(ngModel)]="formulario.activo"
+            />
+            <span>Instructor activo</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        @if (instructorEditandoId !== null) {
+          <button
+            type="button"
+            class="btn btn-secundario"
+            (click)="cancelarEdicion()"
+          >
+            Cancelar
+          </button>
+        }
+
+        <button
+          type="submit"
+          class="btn btn-principal"
+          [disabled]="guardando || escuelas.length === 0 || instructorForm.invalid"
+        >
+          @if (guardando) {
+            Guardando...
+          } @else {
+            {{ instructorEditandoId === null ? 'Registrar instructor' : 'Guardar cambios' }}
+          }
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel listado-panel">
+    <div class="panel-header listado-header">
+      <div>
+        <span class="eyebrow">DIRECTORIO</span>
+        <h2>Instructores registrados</h2>
+        <p>Consultá y administrá el personal de las escuelas.</p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-secundario"
+        (click)="cargarInstructores()"
+      >
+        Actualizar listado
+      </button>
+    </div>
+
+    @if (cargando) {
+      <div class="estado-vacio">Cargando instructores...</div>
+    } @else if (instructores.length === 0) {
+      <div class="estado-vacio">
+        <h3>Todavía no hay instructores</h3>
+        <p>Registrá el primero usando el formulario.</p>
+      </div>
+    } @else {
+      <div class="tabla-contenedor">
+        <table>
+          <thead>
+            <tr>
+              <th>Instructor</th>
+              <th>DNI</th>
+              <th>Especialidad</th>
+              <th>Escuela</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (instructor of instructores; track instructor.id) {
+              <tr>
+                <td>
+                  <div class="persona">
+                    <span class="avatar">
+                      {{ instructor.nombre.charAt(0) }}{{ instructor.apellido.charAt(0) }}
+                    </span>
+                    <div>
+                      <strong>{{ instructor.nombre }} {{ instructor.apellido }}</strong>
+                      <small>{{ instructor.email || 'Sin correo electrónico' }}</small>
+                    </div>
+                  </div>
+                </td>
+
+                <td>{{ instructor.dni }}</td>
+                <td>{{ instructor.especialidad || 'Sin especificar' }}</td>
+                <td>{{ instructor.escuela?.nombre || 'Escuela #' + instructor.escuelaId }}</td>
+
+                <td>
+                  <span
+                    class="estado"
+                    [class.estado-activo]="instructor.activo"
+                    [class.estado-inactivo]="!instructor.activo"
+                  >
+                    {{ instructor.activo ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="acciones">
+                    <button
+                      type="button"
+                      class="btn-accion"
+                      (click)="editarInstructor(instructor)"
+                    >
+                      Editar
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-accion btn-eliminar"
+                      (click)="eliminarInstructor(instructor)"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>
