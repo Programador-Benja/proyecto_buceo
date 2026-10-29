@@ -1,0 +1,292 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.pagina-alumnos {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: #e5e7eb;
+}
+
+.encabezado,
+.encabezado-listado,
+.titulo-formulario {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.encabezado h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.encabezado p,
+.encabezado-listado p {
+  margin: 0;
+  color: #94a3b8;
+}
+
+.tarjeta {
+  min-width: 0;
+  padding: 24px;
+  background: #111827;
+  border: 1px solid #263244;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+}
+
+.tarjeta h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.formulario form {
+  margin-top: 24px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.campo label {
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.campo input:not([type='checkbox']) {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  color: #f8fafc;
+  background: #0b1220;
+  border: 1px solid #334155;
+  border-radius: 9px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.campo input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgb(56 189 248 / 12%);
+}
+
+.campo-completo {
+  grid-column: 1 / -1;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: #38bdf8;
+}
+
+.acciones-formulario,
+.acciones-tabla {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.acciones-formulario {
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #263244;
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+button:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-principal {
+  color: #082f49;
+  background: #38bdf8;
+}
+
+.btn-secundario,
+.btn-cerrar {
+  color: #cbd5e1;
+  background: #263244;
+}
+
+.btn-cerrar {
+  padding: 4px 10px;
+  font-size: 22px;
+}
+
+.btn-editar {
+  color: #bae6fd;
+  background: #0c4a6e;
+}
+
+.btn-eliminar {
+  color: #fecaca;
+  background: #7f1d1d;
+}
+
+.listado {
+  overflow: hidden;
+}
+
+.encabezado-listado {
+  margin-bottom: 20px;
+}
+
+.tabla-contenedor {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th,
+td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #263244;
+  white-space: nowrap;
+}
+
+th {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+td {
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+td strong {
+  color: #f8fafc;
+}
+
+tbody tr:hover {
+  background: rgb(148 163 184 / 5%);
+}
+
+.estado {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.estado.activo {
+  color: #86efac;
+  background: rgb(22 163 74 / 15%);
+}
+
+.estado.inactivo {
+  color: #fca5a5;
+  background: rgb(220 38 38 / 15%);
+}
+
+.estado-vacio {
+  padding: 40px 16px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.estado-vacio h3 {
+  margin: 0 0 8px;
+  color: #e2e8f0;
+}
+
+.estado-vacio p {
+  margin: 0;
+}
+
+.alerta {
+  padding: 14px 16px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.alerta.exito {
+  color: #86efac;
+  background: rgb(22 163 74 / 12%);
+  border-color: rgb(22 163 74 / 30%);
+}
+
+.alerta.error {
+  color: #fecaca;
+  background: rgb(220 38 38 / 12%);
+  border-color: rgb(220 38 38 / 30%);
+}
+
+@media (max-width: 768px) {
+  .encabezado {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tarjeta {
+    padding: 18px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .campo-completo {
+    grid-column: auto;
+  }
+
+  .acciones-formulario {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .acciones-formulario button {
+    width: 100%;
+  }
+}

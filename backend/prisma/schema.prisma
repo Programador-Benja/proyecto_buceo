@@ -17,6 +17,7 @@ model Escuela {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   instructores Instructor[]
+  cursos       Curso[]
 }
 
 model Instructor {
@@ -32,6 +33,66 @@ model Instructor {
   escuela      Escuela  @relation(fields: [escuelaId], references: [id], onDelete: Restrict)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  cursos       Curso[]
 
   @@index([escuelaId])
+}
+
+model Alumno {
+  id                 Int       @id @default(autoincrement())
+  nombre             String    @db.VarChar(100)
+  apellido           String    @db.VarChar(100)
+  dni                String    @unique @db.VarChar(20)
+  fechaNacimiento    DateTime? @db.Date
+  email              String?   @db.VarChar(150)
+  telefono           String?   @db.VarChar(30)
+  direccion          String?   @db.VarChar(255)
+  contactoEmergencia String?   @db.VarChar(150)
+  telefonoEmergencia String?   @db.VarChar(30)
+  activo             Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  usuario            Usuario?
+}
+
+model Curso {
+  id          Int       @id @default(autoincrement())
+  nombre      String    @db.VarChar(150)
+  descripcion String?   @db.Text
+  nivel       String    @db.VarChar(50)
+  fechaInicio DateTime  @db.Date
+  fechaFin    DateTime? @db.Date
+  cupoMaximo  Int
+  precio      Decimal   @default(0) @db.Decimal(10, 2)
+  estado      String    @default("PROGRAMADO") @db.VarChar(20)
+
+  escuelaId    Int
+  instructorId Int
+
+  escuela    Escuela    @relation(fields: [escuelaId], references: [id], onDelete: Restrict)
+  instructor Instructor @relation(fields: [instructorId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([escuelaId])
+  @@index([instructorId])
+  @@index([estado])
+}
+
+enum RolUsuario {
+  ADMIN
+  ALUMNO
+}
+
+model Usuario {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique @db.VarChar(150)
+  passwordHash String     @db.VarChar(255)
+  rol          RolUsuario @default(ALUMNO)
+  activo       Boolean    @default(true)
+  alumnoId     Int?       @unique
+  alumno       Alumno?    @relation(fields: [alumnoId], references: [id], onDelete: Restrict)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }

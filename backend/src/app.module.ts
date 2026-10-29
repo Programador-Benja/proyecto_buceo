@@ -5,6 +5,9 @@ import { AppService } from './app.service.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { EscuelasModule } from './escuelas/escuelas.module.js';
 import { InstructoresModule } from './instructores/instructores.module.js';
+import { AlumnosModule } from './alumnos/alumnos.module.js';
+import { CursosModule } from './cursos/cursos.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 @Module({
   imports: [
@@ -15,6 +18,9 @@ import { InstructoresModule } from './instructores/instructores.module.js';
     PrismaModule,
     EscuelasModule,
     InstructoresModule,
+    AlumnosModule,
+    CursosModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,0 +1,322 @@
+<section class="page-container">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">GESTIÓN ACADÉMICA</span>
+      <h1>Cursos de buceo</h1>
+      <p>Administrá los cursos, sus instructores y las escuelas responsables.</p>
+    </div>
+
+    <button class="btn-primary" type="button" (click)="nuevoCurso()">
+      <span>＋</span> Nuevo curso
+    </button>
+  </header>
+
+  @if (mensaje) {
+    <div class="alert alert-success">{{ mensaje }}</div>
+  }
+
+  @if (error) {
+    <div class="alert alert-error">{{ error }}</div>
+  }
+
+  @if (mostrarFormulario) {
+    <section class="form-card">
+      <div class="form-header">
+        <div>
+          <h2>{{ modoEdicion ? 'Editar curso' : 'Registrar curso' }}</h2>
+          <p>Completá la información del curso.</p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close"
+          (click)="cancelarFormulario()"
+          aria-label="Cerrar formulario"
+        >
+          ×
+        </button>
+      </div>
+
+      <form #cursoForm="ngForm" (ngSubmit)="guardarCurso()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="nombre">Nombre del curso *</label>
+            <input
+              id="nombre"
+              name="nombre"
+              type="text"
+              [(ngModel)]="formulario.nombre"
+              required
+              minlength="3"
+              maxlength="150"
+              placeholder="Ej.: Open Water Diver"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="nivel">Nivel *</label>
+            <select
+              id="nivel"
+              name="nivel"
+              [(ngModel)]="formulario.nivel"
+              required
+            >
+              <option value="PRINCIPIANTE">Principiante</option>
+              <option value="INTERMEDIO">Intermedio</option>
+              <option value="AVANZADO">Avanzado</option>
+              <option value="ESPECIALIZACION">Especialización</option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="descripcion">Descripción</label>
+            <textarea
+              id="descripcion"
+              name="descripcion"
+              [(ngModel)]="formulario.descripcion"
+              rows="3"
+              maxlength="2000"
+              placeholder="Descripción y objetivos del curso"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="fechaInicio">Fecha de inicio *</label>
+            <input
+              id="fechaInicio"
+              name="fechaInicio"
+              type="date"
+              [(ngModel)]="formulario.fechaInicio"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="fechaFin">Fecha de finalización</label>
+            <input
+              id="fechaFin"
+              name="fechaFin"
+              type="date"
+              [(ngModel)]="formulario.fechaFin"
+              [min]="formulario.fechaInicio"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="cupoMaximo">Cupo máximo *</label>
+            <input
+              id="cupoMaximo"
+              name="cupoMaximo"
+              type="number"
+              [(ngModel)]="formulario.cupoMaximo"
+              required
+              min="1"
+              step="1"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="precio">Precio</label>
+            <input
+              id="precio"
+              name="precio"
+              type="number"
+              [(ngModel)]="formulario.precio"
+              min="0"
+              step="0.01"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="estado">Estado</label>
+            <select
+              id="estado"
+              name="estado"
+              [(ngModel)]="formulario.estado"
+            >
+              <option value="PROGRAMADO">Programado</option>
+              <option value="EN_CURSO">En curso</option>
+              <option value="FINALIZADO">Finalizado</option>
+              <option value="CANCELADO">Cancelado</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="escuelaId">Escuela responsable *</label>
+            <select
+              id="escuelaId"
+              name="escuelaId"
+              [(ngModel)]="formulario.escuelaId"
+              (ngModelChange)="cambiarEscuela()"
+              required
+            >
+              <option [ngValue]="0" disabled>Seleccioná una escuela</option>
+
+              @for (escuela of escuelas; track escuela.id) {
+                <option [ngValue]="escuela.id">
+                  {{ escuela.nombre }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="instructorId">Instructor responsable *</label>
+            <select
+              id="instructorId"
+              name="instructorId"
+              [(ngModel)]="formulario.instructorId"
+              required
+            >
+              <option [ngValue]="0" disabled>Seleccioná un instructor</option>
+
+              @for (instructor of instructoresDisponibles; track instructor.id) {
+                <option [ngValue]="instructor.id">
+                  {{ instructor.nombre }} {{ instructor.apellido }}
+                </option>
+              }
+            </select>
+
+            @if (formulario.escuelaId && instructoresDisponibles.length === 0) {
+              <small class="field-hint">
+                Esta escuela no tiene instructores activos disponibles.
+              </small>
+            }
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button
+            class="btn-secondary"
+            type="button"
+            (click)="cancelarFormulario()"
+            [disabled]="guardando"
+          >
+            Cancelar
+          </button>
+
+          <button
+            class="btn-primary"
+            type="submit"
+            [disabled]="guardando || cursoForm.invalid"
+          >
+            {{ guardando ? 'Guardando...' : modoEdicion ? 'Guardar cambios' : 'Registrar curso' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  <section class="list-card">
+    <div class="list-header">
+      <div>
+        <h2>Listado de cursos</h2>
+        <p>{{ cursos.length }} curso(s) registrado(s)</p>
+      </div>
+
+      <button
+        class="btn-secondary"
+        type="button"
+        (click)="cargarDatosIniciales()"
+      >
+        Actualizar
+      </button>
+    </div>
+
+    @if (cargando) {
+      <div class="empty-state">
+        <p>Cargando cursos...</p>
+      </div>
+    } @else if (cursos.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">🤿</div>
+        <h3>Todavía no hay cursos registrados</h3>
+        <p>Creá el primer curso para comenzar a organizar la formación.</p>
+
+        <button class="btn-primary" type="button" (click)="nuevoCurso()">
+          Crear primer curso
+        </button>
+      </div>
+    } @else {
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Curso</th>
+              <th>Escuela</th>
+              <th>Instructor</th>
+              <th>Fechas</th>
+              <th>Cupo</th>
+              <th>Precio</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (curso of cursos; track curso.id) {
+              <tr>
+                <td>
+                  <div class="course-name">{{ curso.nombre }}</div>
+                  <span class="level-tag">{{ curso.nivel }}</span>
+                </td>
+
+                <td>{{ curso.escuela.nombre }}</td>
+
+                <td>
+                  {{ curso.instructor.nombre }}
+                  {{ curso.instructor.apellido }}
+                </td>
+
+                <td>
+                  <div>{{ curso.fechaInicio | date: 'dd/MM/yyyy' }}</div>
+                  <small>
+                    {{ curso.fechaFin ? (curso.fechaFin | date: 'dd/MM/yyyy') : 'Sin fecha de fin' }}
+                  </small>
+                </td>
+
+                <td>{{ curso.cupoMaximo }} alumnos</td>
+
+                <td>
+                  {{ curso.precio | currency: 'ARS' : 'symbol' : '1.2-2' : 'es-AR' }}
+                </td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.programado]="curso.estado === 'PROGRAMADO'"
+                    [class.en-curso]="curso.estado === 'EN_CURSO'"
+                    [class.finalizado]="curso.estado === 'FINALIZADO'"
+                    [class.cancelado]="curso.estado === 'CANCELADO'"
+                  >
+                    {{ curso.estado.replace('_', ' ') }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="action-buttons">
+                    <button
+                      type="button"
+                      class="btn-edit"
+                      (click)="editarCurso(curso)"
+                    >
+                      Editar
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-delete"
+                      (click)="eliminarCurso(curso)"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</section>
